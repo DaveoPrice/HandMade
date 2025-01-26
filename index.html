@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My First GIS Viewer</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1.0">
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-R4+5Q2yf5Dqns2N+2D0wYSnD3Qi76JvHf9A1d9GZnSM="
+    crossorigin=""
+  />
+  <style>
+    /* Give your map a size */
+    #map {
+      width: 100%;
+      height: 600px;
+    }
+  </style>
+</head>
+<body>
+  <h1>My First GIS Viewer</h1>
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-qf2H2s61u2sTtHqEG7hGVmyo31MakK2RNCljGtEtoIY="
+    crossorigin=""
+  ></script>
+
+  <script>
+    // 1. Initialize the map
+    const map = L.map('map').setView([51.505, -0.09], 13);
+
+    // 2. Add a base layer (OpenStreetMap tiles)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    // 3. OPTIONAL: Load a local GeoJSON file (if you have one in "data/data.geojson")
+    fetch('data/data.geojson')
+      .then(response => response.json())
+      .then(geojsonData => {
+        L.geoJSON(geojsonData).addTo(map);
+      })
+      .catch(err => console.log('No local GeoJSON found or error:', err));
+  </script>
+</body>
+</html>
