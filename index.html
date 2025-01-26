@@ -41,13 +41,7 @@
       attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    // 3. OPTIONAL: Load a local GeoJSON file (if you have one in "data/data.geojson")
-    fetch('data/data.geojson')
-      .then(response => response.json())
-      .then(geojsonData => {
-        L.geoJSON(geojsonData).addTo(map);
-      })
-      .catch(err => console.log('No local GeoJSON found or error:', err));
+    /
   </script>
 </body>
 </html>
