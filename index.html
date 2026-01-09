@@ -94,12 +94,61 @@
                     <div id="owned-teas"></div>
                 </div>
             </div>
+
+            <!-- Notebook Panel -->
+            <div id="notebook-panel" class="panel">
+                <h2>📓 Tea Notebook</h2>
+                <p class="description">Track your brewing experiments, customer preferences, and tea knowledge.</p>
+
+                <div id="notebook-tabs">
+                    <button class="notebook-tab active" data-section="tea-notes">Tea Notes</button>
+                    <button class="notebook-tab" data-section="customer-log">Customer Log</button>
+                    <button class="notebook-tab" data-section="brewing-history">Brew History</button>
+                    <button class="notebook-tab" data-section="general-notes">Notes</button>
+                    <button class="notebook-tab" data-section="statistics">Stats</button>
+                </div>
+
+                <!-- Tea Notes Section -->
+                <div id="tea-notes-section" class="notebook-section active">
+                    <h3>Tea Notes & Brewing Tips</h3>
+                    <div id="tea-notes-list"></div>
+                </div>
+
+                <!-- Customer Log Section -->
+                <div id="customer-log-section" class="notebook-section">
+                    <h3>Customer Service Log</h3>
+                    <div id="customer-log-list"></div>
+                </div>
+
+                <!-- Brewing History Section -->
+                <div id="brewing-history-section" class="notebook-section">
+                    <h3>Recent Brewing History</h3>
+                    <div id="brewing-history-list"></div>
+                </div>
+
+                <!-- General Notes Section -->
+                <div id="general-notes-section" class="notebook-section">
+                    <h3>General Notes</h3>
+                    <div class="note-input-area">
+                        <textarea id="new-note-input" placeholder="Write a note about teas, techniques, or observations..."></textarea>
+                        <button id="add-note-btn" class="btn-primary">Add Note</button>
+                    </div>
+                    <div id="general-notes-list"></div>
+                </div>
+
+                <!-- Statistics Section -->
+                <div id="statistics-section" class="notebook-section">
+                    <h3>Brewing Statistics</h3>
+                    <div id="statistics-display"></div>
+                </div>
+            </div>
         </div>
 
         <!-- Tab Navigation -->
         <nav id="tab-nav">
             <button class="tab-btn active" data-panel="shop-panel">🏪 Shop</button>
             <button class="tab-btn" data-panel="foraging-panel">🌿 Sourcing</button>
+            <button class="tab-btn" data-panel="notebook-panel">📓 Notebook</button>
         </nav>
 
         <!-- Shop Upgrades Modal -->
@@ -116,6 +165,7 @@
     <script src="tea-data.js"></script>
     <script src="customer.js"></script>
     <script src="foraging.js"></script>
+    <script src="notebook.js"></script>
     <script src="game.js"></script>
 </body>
 </html>

@@ -13,6 +13,7 @@ class TeaShopGame {
         // Managers
         this.customerManager = new CustomerManager(this.state);
         this.foragingManager = new ForagingManager(this.state);
+        this.notebookManager = new NotebookManager();
 
         // Brewing state
         this.currentBrew = {
@@ -67,6 +68,9 @@ class TeaShopGame {
 
         // Foraging
         this.initializeForagingUI();
+
+        // Notebook
+        this.initializeNotebookUI();
 
         // Populate tea select
         this.populateTeaSelect();
@@ -127,6 +131,11 @@ class TeaShopGame {
         if (panelId === 'foraging-panel') {
             this.initializeForagingUI();
             this.updateTeaCollection();
+        }
+
+        // Refresh notebook when switching to it
+        if (panelId === 'notebook-panel') {
+            this.updateNotebookUI();
         }
     }
 
@@ -253,6 +262,31 @@ class TeaShopGame {
         if (feedback.quality === 'perfect') {
             this.state.perfectBrews++;
         }
+
+        // Record in notebook
+        this.notebookManager.updateTeaStats(
+            this.currentBrew.tea.id,
+            this.currentBrew.tea.name,
+            this.currentBrew.temperature,
+            this.currentBrew.steepTime,
+            feedback.quality
+        );
+
+        this.notebookManager.recordBrew(
+            this.currentBrew.tea.name,
+            this.currentBrew.temperature,
+            this.currentBrew.steepTime,
+            feedback.quality,
+            feedback.customerName
+        );
+
+        this.notebookManager.addCustomerNote(
+            feedback.customerName,
+            this.customerManager.currentCustomer.type,
+            this.currentBrew.tea.name,
+            feedback.quality,
+            feedback.customerResponse
+        );
 
         // Show feedback
         this.displayFeedback(feedback);
@@ -394,6 +428,262 @@ class TeaShopGame {
         document.querySelector('#money .value').textContent = this.state.money;
         document.querySelector('#reputation .value').textContent = this.state.reputation;
         document.querySelector('#day .value').textContent = this.state.day;
+    }
+
+    // Notebook UI Management
+    initializeNotebookUI() {
+        // Notebook tab switching
+        document.querySelectorAll('.notebook-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                const targetSection = e.target.dataset.section;
+                this.switchNotebookSection(targetSection);
+            });
+        });
+
+        // Add note button
+        document.getElementById('add-note-btn').addEventListener('click', () => {
+            const noteText = document.getElementById('new-note-input').value.trim();
+            if (noteText) {
+                this.notebookManager.addGeneralNote(noteText);
+                document.getElementById('new-note-input').value = '';
+                this.updateGeneralNotes();
+            }
+        });
+    }
+
+    switchNotebookSection(sectionId) {
+        // Hide all sections
+        document.querySelectorAll('.notebook-section').forEach(section => {
+            section.classList.remove('active');
+        });
+
+        // Show selected section
+        document.getElementById(sectionId + '-section').classList.add('active');
+
+        // Update tab buttons
+        document.querySelectorAll('.notebook-tab').forEach(tab => {
+            tab.classList.remove('active');
+            if (tab.dataset.section === sectionId) {
+                tab.classList.add('active');
+            }
+        });
+
+        // Update the section content
+        this.updateNotebookSection(sectionId);
+    }
+
+    updateNotebookUI() {
+        // Update all sections
+        this.updateTeaNotes();
+        this.updateCustomerLog();
+        this.updateBrewingHistory();
+        this.updateGeneralNotes();
+        this.updateStatistics();
+    }
+
+    updateNotebookSection(sectionId) {
+        switch(sectionId) {
+            case 'tea-notes':
+                this.updateTeaNotes();
+                break;
+            case 'customer-log':
+                this.updateCustomerLog();
+                break;
+            case 'brewing-history':
+                this.updateBrewingHistory();
+                break;
+            case 'general-notes':
+                this.updateGeneralNotes();
+                break;
+            case 'statistics':
+                this.updateStatistics();
+                break;
+        }
+    }
+
+    updateTeaNotes() {
+        const container = document.getElementById('tea-notes-list');
+        const teaNotes = this.notebookManager.getAllTeaNotes();
+
+        if (Object.keys(teaNotes).length === 0) {
+            container.innerHTML = '<p style="color: var(--text-light); font-style: italic;">No tea notes yet. Start brewing to collect data!</p>';
+            return;
+        }
+
+        container.innerHTML = '';
+
+        Object.entries(teaNotes).forEach(([teaId, noteData]) => {
+            const card = document.createElement('div');
+            card.className = 'tea-note-card';
+
+            const suggestion = this.notebookManager.getSuggestion(teaId);
+            const tea = TEA_DATABASE[teaId];
+
+            card.innerHTML = `
+                <h4>${noteData.teaName}</h4>
+                <div class="stats">
+                    <span>Brews: ${noteData.totalBrews}</span>
+                    <span>Success: ${noteData.successfulBrews}</span>
+                    <span>Rate: ${noteData.totalBrews > 0 ? ((noteData.successfulBrews / noteData.totalBrews) * 100).toFixed(0) : 0}%</span>
+                </div>
+                ${suggestion ? `
+                    <div class="suggestion">
+                        💡 Best Results: ${suggestion.temperature}°C, ${suggestion.steepTime}s (${suggestion.successRate}% success)
+                    </div>
+                ` : ''}
+                ${tea ? `
+                    <div class="suggestion" style="background: #f0f8ff; border-left-color: var(--accent-primary);">
+                        📖 Ideal: ${tea.idealTemp}°C, ${tea.idealSteep}s
+                    </div>
+                ` : ''}
+                ${noteData.notes.length > 0 ? `
+                    <div style="margin-top: 10px;">
+                        <strong>Notes:</strong>
+                        ${noteData.notes.map(note => `
+                            <div class="note-entry">
+                                <div>${note.text}</div>
+                                <div class="note-date">${note.date}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            `;
+
+            container.appendChild(card);
+        });
+    }
+
+    updateCustomerLog() {
+        const container = document.getElementById('customer-log-list');
+        const customerNotes = this.notebookManager.getCustomerNotes();
+
+        if (customerNotes.length === 0) {
+            container.innerHTML = '<p style="color: var(--text-light); font-style: italic;">No customer interactions yet.</p>';
+            return;
+        }
+
+        container.innerHTML = '';
+
+        customerNotes.forEach(note => {
+            const entry = document.createElement('div');
+            entry.className = `customer-log-entry ${note.quality}`;
+
+            entry.innerHTML = `
+                <div class="log-header">
+                    <span class="customer-name">${note.customerName} (${note.customerType})</span>
+                    <span class="log-date">${note.date}</span>
+                </div>
+                <div class="log-details">
+                    Served: ${note.teaServed} | Quality: ${note.quality}
+                </div>
+                ${note.note ? `<div style="margin-top: 5px; font-style: italic;">"${note.note}"</div>` : ''}
+            `;
+
+            container.appendChild(entry);
+        });
+    }
+
+    updateBrewingHistory() {
+        const container = document.getElementById('brewing-history-list');
+        const history = this.notebookManager.getBrewingHistory(30);
+
+        if (history.length === 0) {
+            container.innerHTML = '<p style="color: var(--text-light); font-style: italic;">No brewing history yet.</p>';
+            return;
+        }
+
+        container.innerHTML = '';
+
+        history.forEach(brew => {
+            const entry = document.createElement('div');
+            entry.className = 'brew-history-entry';
+
+            entry.innerHTML = `
+                <div class="brew-info">
+                    <div class="tea-name">${brew.teaName}</div>
+                    <div class="brew-params">${brew.temperature}°C, ${brew.steepTime}s | ${brew.customerName}</div>
+                    <div style="font-size: 0.8em; color: var(--text-light);">${brew.date}</div>
+                </div>
+                <div class="quality-badge ${brew.quality}">${brew.quality}</div>
+            `;
+
+            container.appendChild(entry);
+        });
+    }
+
+    updateGeneralNotes() {
+        const container = document.getElementById('general-notes-list');
+        const notes = this.notebookManager.getGeneralNotes();
+
+        if (notes.length === 0) {
+            container.innerHTML = '<p style="color: var(--text-light); font-style: italic;">No notes yet. Add your observations above!</p>';
+            return;
+        }
+
+        container.innerHTML = '';
+
+        notes.forEach((note, index) => {
+            const noteItem = document.createElement('div');
+            noteItem.className = 'general-note-item';
+
+            noteItem.innerHTML = `
+                <div class="note-text">${note.text}</div>
+                <div class="note-meta">
+                    <span class="note-date">${note.date}</span>
+                    <button class="delete-note-btn" data-index="${index}">Delete</button>
+                </div>
+            `;
+
+            // Add delete handler
+            noteItem.querySelector('.delete-note-btn').addEventListener('click', (e) => {
+                const idx = parseInt(e.target.dataset.index);
+                this.notebookManager.deleteGeneralNote(idx);
+                this.updateGeneralNotes();
+            });
+
+            container.appendChild(noteItem);
+        });
+    }
+
+    updateStatistics() {
+        const container = document.getElementById('statistics-display');
+        const stats = this.notebookManager.getStatistics();
+
+        container.innerHTML = `
+            <div class="stat-card">
+                <h4>Overall Performance</h4>
+                <div class="stat-grid">
+                    <div class="stat-item">
+                        <span class="stat-value">${stats.totalBrews}</span>
+                        <span class="stat-label">Total Brews</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">${stats.perfectBrews}</span>
+                        <span class="stat-label">Perfect Brews</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">${stats.goodBrews}</span>
+                        <span class="stat-label">Good Brews</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">${stats.successRate}%</span>
+                        <span class="stat-label">Success Rate</span>
+                    </div>
+                </div>
+            </div>
+
+            ${stats.topTeas.length > 0 ? `
+                <div class="stat-card">
+                    <h4>Most Brewed Teas</h4>
+                    ${stats.topTeas.map((tea, index) => `
+                        <div class="top-tea-item">
+                            <span class="tea-name">${index + 1}. ${tea.name}</span>
+                            <span class="tea-stats">${tea.totalBrews} brews (${tea.successRate}% success)</span>
+                        </div>
+                    `).join('')}
+                </div>
+            ` : ''}
+        `;
     }
 }
 

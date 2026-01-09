@@ -477,6 +477,338 @@ button:disabled {
     margin-bottom: 5px;
 }
 
+/* Notebook Styles */
+#notebook-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.notebook-tab {
+    background: var(--bg-main);
+    color: var(--text-dark);
+    border: 2px solid var(--border);
+    padding: 10px 18px;
+    font-size: 0.95em;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.notebook-tab.active {
+    background: var(--accent-primary);
+    color: white;
+    border-color: var(--accent-primary);
+}
+
+.notebook-tab:hover {
+    background: var(--accent-secondary);
+    color: white;
+    border-color: var(--accent-secondary);
+}
+
+.notebook-section {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.notebook-section.active {
+    display: block;
+}
+
+/* Tea Notes List */
+#tea-notes-list {
+    display: grid;
+    gap: 15px;
+}
+
+.tea-note-card {
+    background: linear-gradient(135deg, #f9f6f0, #ede4d3);
+    padding: 15px;
+    border-radius: 8px;
+    border: 2px solid var(--border);
+}
+
+.tea-note-card h4 {
+    color: var(--accent-primary);
+    margin-bottom: 8px;
+}
+
+.tea-note-card .stats {
+    display: flex;
+    gap: 15px;
+    margin: 10px 0;
+    font-size: 0.9em;
+    color: var(--text-light);
+}
+
+.tea-note-card .suggestion {
+    background: #e8f5e9;
+    padding: 8px;
+    border-radius: 4px;
+    border-left: 3px solid var(--success);
+    margin: 8px 0;
+    font-size: 0.9em;
+}
+
+.tea-note-card .note-entry {
+    background: white;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 4px;
+    border-left: 3px solid var(--accent-secondary);
+}
+
+.tea-note-card .note-date {
+    font-size: 0.85em;
+    color: var(--text-light);
+    font-style: italic;
+}
+
+/* Customer Log */
+#customer-log-list {
+    display: grid;
+    gap: 10px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.customer-log-entry {
+    background: white;
+    padding: 12px;
+    border-radius: 6px;
+    border-left: 4px solid var(--accent-primary);
+}
+
+.customer-log-entry.perfect {
+    border-left-color: var(--success);
+    background: #f1f9f1;
+}
+
+.customer-log-entry.good {
+    border-left-color: var(--warning);
+    background: #fffbf0;
+}
+
+.customer-log-entry.poor {
+    border-left-color: var(--danger);
+    background: #fff5f5;
+}
+
+.customer-log-entry .log-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.customer-log-entry .customer-name {
+    font-weight: bold;
+    color: var(--text-dark);
+}
+
+.customer-log-entry .log-date {
+    font-size: 0.85em;
+    color: var(--text-light);
+}
+
+.customer-log-entry .log-details {
+    font-size: 0.9em;
+    color: var(--text-light);
+}
+
+/* Brewing History */
+#brewing-history-list {
+    display: grid;
+    gap: 10px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.brew-history-entry {
+    background: white;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+}
+
+.brew-history-entry .brew-info {
+    font-size: 0.9em;
+}
+
+.brew-history-entry .tea-name {
+    font-weight: bold;
+    color: var(--accent-primary);
+}
+
+.brew-history-entry .brew-params {
+    color: var(--text-light);
+    font-size: 0.85em;
+}
+
+.brew-history-entry .quality-badge {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-align: center;
+}
+
+.quality-badge.perfect {
+    background: var(--success);
+    color: white;
+}
+
+.quality-badge.good {
+    background: var(--warning);
+    color: white;
+}
+
+.quality-badge.acceptable {
+    background: #aaa;
+    color: white;
+}
+
+.quality-badge.poor {
+    background: var(--danger);
+    color: white;
+}
+
+/* General Notes */
+.note-input-area {
+    margin-bottom: 20px;
+}
+
+#new-note-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 1em;
+    resize: vertical;
+    min-height: 80px;
+    margin-bottom: 10px;
+}
+
+#new-note-input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+#general-notes-list {
+    display: grid;
+    gap: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.general-note-item {
+    background: #fffef8;
+    padding: 12px;
+    border-radius: 6px;
+    border-left: 4px solid var(--accent-secondary);
+    position: relative;
+}
+
+.general-note-item .note-text {
+    color: var(--text-dark);
+    margin-bottom: 5px;
+}
+
+.general-note-item .note-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.general-note-item .note-date {
+    font-size: 0.85em;
+    color: var(--text-light);
+    font-style: italic;
+}
+
+.general-note-item .delete-note-btn {
+    padding: 4px 10px;
+    font-size: 0.8em;
+    background: var(--danger);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.general-note-item .delete-note-btn:hover {
+    background: #a56960;
+}
+
+/* Statistics */
+#statistics-display {
+    display: grid;
+    gap: 20px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #f9f6f0, #ede4d3);
+    padding: 20px;
+    border-radius: 8px;
+    border: 2px solid var(--border);
+}
+
+.stat-card h4 {
+    color: var(--accent-primary);
+    margin-bottom: 10px;
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin: 10px 0;
+}
+
+.stat-item {
+    background: white;
+    padding: 12px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: var(--accent-secondary);
+    display: block;
+}
+
+.stat-label {
+    font-size: 0.9em;
+    color: var(--text-light);
+}
+
+.top-tea-item {
+    background: white;
+    padding: 10px;
+    border-radius: 6px;
+    margin: 8px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top-tea-item .tea-name {
+    font-weight: bold;
+    color: var(--accent-primary);
+}
+
+.top-tea-item .tea-stats {
+    font-size: 0.9em;
+    color: var(--text-light);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     header h1 {
@@ -493,6 +825,19 @@ button:disabled {
     }
 
     #locations {
+        grid-template-columns: 1fr;
+    }
+
+    #notebook-tabs {
+        gap: 5px;
+    }
+
+    .notebook-tab {
+        padding: 8px 12px;
+        font-size: 0.85em;
+    }
+
+    .stat-grid {
         grid-template-columns: 1fr;
     }
 }
