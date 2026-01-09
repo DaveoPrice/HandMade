@@ -1,47 +1,121 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>My First GIS Viewer</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="initial-scale=1.0">
-
-  <!-- Leaflet CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-R4+5Q2yf5Dqns2N+2D0wYSnD3Qi76JvHf9A1d9GZnSM="
-    crossorigin=""
-  />
-  <style>
-    /* Give your map a size */
-    #map {
-      width: 100%;
-      height: 600px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tranquil Tea - A Cozy Shop Simulation</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>My First GIS Viewer</h1>
-  <div id="map"></div>
+    <div id="game-container">
+        <!-- Header -->
+        <header>
+            <h1>🍵 Tranquil Tea</h1>
+            <div id="stats">
+                <span id="reputation">⭐ Reputation: <span class="value">0</span></span>
+                <span id="money">💰 Coins: <span class="value">100</span></span>
+                <span id="day">📅 Day: <span class="value">1</span></span>
+            </div>
+        </header>
 
-  <!-- Leaflet JS -->
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-qf2H2s61u2sTtHqEG7hGVmyo31MakK2RNCljGtEtoIY="
-    crossorigin=""
-  ></script>
+        <!-- Main Game Area -->
+        <div id="game-area">
+            <!-- Left Panel: Shop View -->
+            <div id="shop-panel" class="panel active">
+                <h2>Your Tea Shop</h2>
 
-  <script>
-    // 1. Initialize the map
-    const map = L.map('map').setView([51.505, -0.09], 13);
+                <!-- Current Customer -->
+                <div id="customer-area">
+                    <div id="current-customer" class="hidden">
+                        <div class="customer-info">
+                            <h3 id="customer-name"></h3>
+                            <p id="customer-mood"></p>
+                            <p id="customer-request"></p>
+                        </div>
+                        <div class="customer-avatar"></div>
+                    </div>
+                    <button id="next-customer-btn" class="btn-primary">Welcome Next Customer</button>
+                </div>
 
-    // 2. Add a base layer (OpenStreetMap tiles)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '© OpenStreetMap'
-    }).addTo(map);
+                <!-- Tea Preparation Area -->
+                <div id="brewing-area" class="hidden">
+                    <h3>Prepare Tea</h3>
+                    <div id="tea-selection">
+                        <label>Select Tea:</label>
+                        <select id="tea-select"></select>
+                    </div>
 
-    /
-  </script>
+                    <div id="brewing-controls">
+                        <div class="control-group">
+                            <label>Temperature: <span id="temp-display">75</span>°C</label>
+                            <input type="range" id="temp-slider" min="60" max="100" value="75">
+                            <div class="temp-zones">
+                                <span class="zone">Green 70-80°C</span>
+                                <span class="zone">White 75-85°C</span>
+                                <span class="zone">Oolong 85-95°C</span>
+                                <span class="zone">Black 95-100°C</span>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label>Steeping Time: <span id="steep-display">0</span>s</label>
+                            <div id="steep-timer">
+                                <div id="steep-progress"></div>
+                            </div>
+                            <button id="start-steep-btn" class="btn-primary">Start Steeping</button>
+                            <button id="stop-steep-btn" class="btn-warning hidden">Serve Tea</button>
+                        </div>
+                    </div>
+
+                    <div id="brew-feedback"></div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Foraging View -->
+            <div id="foraging-panel" class="panel">
+                <h2>Tea Sourcing</h2>
+                <p class="description">Explore the countryside to discover new tea varieties and ingredients.</p>
+
+                <div id="foraging-area">
+                    <div id="location-select">
+                        <h3>Choose Your Destination</h3>
+                        <div id="locations"></div>
+                    </div>
+
+                    <div id="foraging-results" class="hidden">
+                        <h3>Foraging...</h3>
+                        <div id="found-items"></div>
+                        <button id="return-shop-btn" class="btn-primary">Return to Shop</button>
+                    </div>
+                </div>
+
+                <div id="tea-collection">
+                    <h3>Your Tea Collection</h3>
+                    <div id="owned-teas"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <nav id="tab-nav">
+            <button class="tab-btn active" data-panel="shop-panel">🏪 Shop</button>
+            <button class="tab-btn" data-panel="foraging-panel">🌿 Sourcing</button>
+        </nav>
+
+        <!-- Shop Upgrades Modal -->
+        <div id="upgrade-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2>Shop Upgrades</h2>
+                <div id="upgrade-list"></div>
+                <button class="btn-secondary close-modal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Scripts -->
+    <script src="tea-data.js"></script>
+    <script src="customer.js"></script>
+    <script src="foraging.js"></script>
+    <script src="game.js"></script>
 </body>
 </html>

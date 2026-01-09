@@ -1,0 +1,498 @@
+/* Color Palette - Cozy Tea Shop Vibe */
+:root {
+    --bg-main: #f5f1e8;
+    --bg-panel: #ffffff;
+    --accent-primary: #6b8e6f;
+    --accent-secondary: #d4a574;
+    --text-dark: #3d3021;
+    --text-light: #7a6f5d;
+    --border: #d9ceb8;
+    --shadow: rgba(61, 48, 33, 0.1);
+    --success: #7ba379;
+    --warning: #d4a574;
+    --danger: #c17a6f;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: linear-gradient(to bottom, #f5f1e8, #e8dfc8);
+    color: var(--text-dark);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+#game-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+header {
+    background: var(--bg-panel);
+    padding: 20px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow);
+    margin-bottom: 20px;
+    border: 2px solid var(--border);
+}
+
+header h1 {
+    color: var(--accent-primary);
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+#stats {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    font-size: 1.1em;
+    color: var(--text-light);
+}
+
+#stats .value {
+    color: var(--accent-secondary);
+    font-weight: bold;
+}
+
+/* Main Game Area */
+#game-area {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    min-height: 500px;
+}
+
+.panel {
+    background: var(--bg-panel);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow);
+    border: 2px solid var(--border);
+    display: none;
+}
+
+.panel.active {
+    display: block;
+}
+
+.panel h2 {
+    color: var(--accent-primary);
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 10px;
+}
+
+.panel h3 {
+    color: var(--text-dark);
+    margin: 15px 0 10px 0;
+}
+
+.description {
+    color: var(--text-light);
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+/* Customer Area */
+#customer-area {
+    background: linear-gradient(135deg, #f9f6f0, #f0e9d8);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+}
+
+#current-customer {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.customer-info h3 {
+    color: var(--accent-primary);
+    margin-bottom: 5px;
+}
+
+.customer-info p {
+    color: var(--text-light);
+    margin: 5px 0;
+}
+
+.customer-avatar {
+    width: 80px;
+    height: 80px;
+    background: var(--accent-secondary);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
+/* Brewing Area */
+#brewing-area {
+    background: #faf7f2;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+#tea-selection {
+    margin-bottom: 20px;
+}
+
+#tea-selection label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: var(--text-dark);
+}
+
+#tea-select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    background: white;
+    font-size: 1em;
+    color: var(--text-dark);
+}
+
+.control-group {
+    margin-bottom: 25px;
+}
+
+.control-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: var(--text-dark);
+}
+
+#temp-slider {
+    width: 100%;
+    height: 8px;
+    border-radius: 5px;
+    background: linear-gradient(to right, #7ba379, #d4a574, #c17a6f);
+    outline: none;
+    -webkit-appearance: none;
+}
+
+#temp-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    cursor: pointer;
+    box-shadow: 0 2px 4px var(--shadow);
+}
+
+#temp-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px var(--shadow);
+}
+
+.temp-zones {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 0.85em;
+    color: var(--text-light);
+}
+
+/* Steep Timer */
+#steep-timer {
+    width: 100%;
+    height: 30px;
+    background: #e8dfc8;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    border: 2px solid var(--border);
+}
+
+#steep-progress {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    width: 0%;
+    transition: width 0.1s linear;
+    border-radius: 15px;
+}
+
+/* Brew Feedback */
+#brew-feedback {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 6px;
+    font-weight: bold;
+    text-align: center;
+    display: none;
+}
+
+#brew-feedback.show {
+    display: block;
+}
+
+#brew-feedback.perfect {
+    background: #e8f5e9;
+    color: var(--success);
+    border: 2px solid var(--success);
+}
+
+#brew-feedback.good {
+    background: #fff8e1;
+    color: var(--warning);
+    border: 2px solid var(--warning);
+}
+
+#brew-feedback.poor {
+    background: #ffebee;
+    color: var(--danger);
+    border: 2px solid var(--danger);
+}
+
+/* Buttons */
+button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    font-weight: bold;
+}
+
+.btn-primary {
+    background: var(--accent-primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #5a7a5e;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--shadow);
+}
+
+.btn-secondary {
+    background: var(--accent-secondary);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #c19563;
+    transform: translateY(-2px);
+}
+
+.btn-warning {
+    background: var(--warning);
+    color: white;
+}
+
+.btn-warning:hover {
+    background: #c19563;
+}
+
+button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Foraging Area */
+#locations {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.location-card {
+    background: linear-gradient(135deg, #f9f6f0, #ede4d3);
+    padding: 20px;
+    border-radius: 8px;
+    border: 2px solid var(--border);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.location-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px var(--shadow);
+    border-color: var(--accent-primary);
+}
+
+.location-card h4 {
+    color: var(--accent-primary);
+    margin-bottom: 8px;
+}
+
+.location-card p {
+    color: var(--text-light);
+    font-size: 0.9em;
+}
+
+/* Tea Collection */
+#owned-teas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.tea-item {
+    background: white;
+    padding: 12px;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    text-align: center;
+}
+
+.tea-item.unlocked {
+    border-color: var(--accent-primary);
+}
+
+.tea-item.locked {
+    opacity: 0.5;
+    background: #f5f5f5;
+}
+
+.tea-item h4 {
+    color: var(--accent-primary);
+    font-size: 0.95em;
+    margin-bottom: 5px;
+}
+
+.tea-item p {
+    color: var(--text-light);
+    font-size: 0.8em;
+}
+
+/* Tab Navigation */
+#tab-nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.tab-btn {
+    background: var(--bg-panel);
+    color: var(--text-dark);
+    border: 2px solid var(--border);
+    padding: 15px 30px;
+    font-size: 1.1em;
+}
+
+.tab-btn.active {
+    background: var(--accent-primary);
+    color: white;
+    border-color: var(--accent-primary);
+}
+
+.tab-btn:hover {
+    background: var(--accent-secondary);
+    color: white;
+    border-color: var(--accent-secondary);
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: var(--bg-panel);
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Foraging Results */
+#found-items {
+    display: grid;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.found-item {
+    background: white;
+    padding: 15px;
+    border-radius: 6px;
+    border: 2px solid var(--accent-primary);
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.found-item.new {
+    background: #e8f5e9;
+    border-color: var(--success);
+}
+
+.found-item h4 {
+    color: var(--accent-primary);
+    margin-bottom: 5px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.8em;
+    }
+
+    #stats {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .panel {
+        padding: 20px;
+    }
+
+    #locations {
+        grid-template-columns: 1fr;
+    }
+}
