@@ -14,6 +14,7 @@ class TeaShopGame {
         this.customerManager = new CustomerManager(this.state);
         this.foragingManager = new ForagingManager(this.state);
         this.notebookManager = new NotebookManager();
+        this.vesselManager = new VesselManager(this.state);
 
         // Brewing state
         this.currentBrew = {
@@ -84,6 +85,9 @@ class TeaShopGame {
 
         // Notebook
         this.initializeNotebookUI();
+
+        // Vessels
+        this.initializeVesselUI();
 
         // Populate tea select
         this.populateTeaSelect();
@@ -261,11 +265,15 @@ class TeaShopGame {
         clearInterval(this.currentBrew.steepInterval);
         this.currentBrew.steeping = false;
 
-        // Evaluate the brew
+        // Get vessel bonuses
+        const vessel = this.vesselManager.getCurrentVessel();
+
+        // Evaluate the brew with vessel bonuses
         const feedback = this.customerManager.evaluateService(
             this.currentBrew.tea,
             this.currentBrew.temperature,
-            this.currentBrew.steepTime
+            this.currentBrew.steepTime,
+            vessel
         );
 
         // Update game state
@@ -707,6 +715,176 @@ class TeaShopGame {
                 </div>
             ` : ''}
         `;
+    }
+
+    // Vessel Management Methods
+    initializeVesselUI() {
+        // Update current vessel display
+        this.updateVesselDisplay();
+
+        // Change vessel button
+        const changeVesselBtn = document.getElementById('change-vessel-btn');
+        if (changeVesselBtn) {
+            changeVesselBtn.addEventListener('click', () => {
+                this.openVesselShop();
+            });
+        }
+
+        // Modal close buttons
+        document.querySelectorAll('.close-modal').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.target.closest('.modal').classList.add('hidden');
+            });
+        });
+
+        // Vessel tab switching
+        document.querySelectorAll('.vessel-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                const tabName = e.target.dataset.tab;
+
+                // Update active tab
+                document.querySelectorAll('.vessel-tab').forEach(t => t.classList.remove('active'));
+                e.target.classList.add('active');
+
+                // Show corresponding content
+                document.querySelectorAll('.vessel-tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(`${tabName}-vessels`).classList.add('active');
+            });
+        });
+    }
+
+    updateVesselDisplay() {
+        const vessel = this.vesselManager.getCurrentVessel();
+        const vesselImage = document.getElementById('vessel-image');
+        const vesselName = document.getElementById('vessel-name');
+
+        if (vesselImage) vesselImage.src = vessel.image;
+        if (vesselName) vesselName.textContent = `${vessel.emoji} ${vessel.name}`;
+    }
+
+    openVesselShop() {
+        const modal = document.getElementById('vessel-modal');
+        modal.classList.remove('hidden');
+
+        // Populate available vessels
+        this.populateVesselShop();
+
+        // Populate owned vessels
+        this.populateOwnedVessels();
+    }
+
+    populateVesselShop() {
+        const shopList = document.getElementById('vessel-shop-list');
+        const locked = this.vesselManager.getLockedVessels();
+
+        shopList.innerHTML = locked.map(vessel => `
+            <div class="vessel-card ${this.state.money >= vessel.cost ? 'affordable' : 'locked'}">
+                <div class="vessel-image-container">
+                    <img src="${vessel.image}" alt="${vessel.name}" class="vessel-card-image">
+                    <div class="vessel-emoji">${vessel.emoji}</div>
+                </div>
+                <div class="vessel-card-content">
+                    <h4>${vessel.name}</h4>
+                    <p class="vessel-description">${vessel.description}</p>
+                    <div class="vessel-stats">
+                        <div class="vessel-stat">
+                            <span class="stat-icon">⭐</span>
+                            <span>+${vessel.qualityBonus}% quality</span>
+                        </div>
+                        <div class="vessel-stat">
+                            <span class="stat-icon">⏱️</span>
+                            <span>+${vessel.timeBonus}s tolerance</span>
+                        </div>
+                    </div>
+                    <div class="vessel-card-footer">
+                        <span class="vessel-price">💰 ${vessel.cost} coins</span>
+                        <button class="btn-primary btn-small purchase-vessel"
+                                data-vessel="${vessel.id}"
+                                ${this.state.money < vessel.cost ? 'disabled' : ''}>
+                            ${this.state.money >= vessel.cost ? 'Purchase' : 'Too Expensive'}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        // Add event listeners to purchase buttons
+        shopList.querySelectorAll('.purchase-vessel').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const vesselId = e.target.dataset.vessel;
+                this.purchaseVessel(vesselId);
+            });
+        });
+    }
+
+    populateOwnedVessels() {
+        const ownedList = document.getElementById('owned-vessel-list');
+        const owned = this.vesselManager.getUnlockedVessels();
+        const current = this.vesselManager.getCurrentVessel();
+
+        ownedList.innerHTML = owned.map(vessel => `
+            <div class="vessel-card owned ${vessel.id === current.id ? 'equipped' : ''}">
+                <div class="vessel-image-container">
+                    <img src="${vessel.image}" alt="${vessel.name}" class="vessel-card-image">
+                    <div class="vessel-emoji">${vessel.emoji}</div>
+                    ${vessel.id === current.id ? '<div class="equipped-badge">✓ Equipped</div>' : ''}
+                </div>
+                <div class="vessel-card-content">
+                    <h4>${vessel.name}</h4>
+                    <p class="vessel-description">${vessel.description}</p>
+                    <div class="vessel-stats">
+                        <div class="vessel-stat">
+                            <span class="stat-icon">⭐</span>
+                            <span>+${vessel.qualityBonus}% quality</span>
+                        </div>
+                        <div class="vessel-stat">
+                            <span class="stat-icon">⏱️</span>
+                            <span>+${vessel.timeBonus}s tolerance</span>
+                        </div>
+                    </div>
+                    ${vessel.id !== current.id ? `
+                        <button class="btn-secondary btn-small equip-vessel" data-vessel="${vessel.id}">
+                            Equip
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+        `).join('');
+
+        // Add event listeners to equip buttons
+        ownedList.querySelectorAll('.equip-vessel').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const vesselId = e.target.dataset.vessel;
+                this.equipVessel(vesselId);
+            });
+        });
+    }
+
+    purchaseVessel(vesselId) {
+        const result = this.vesselManager.purchaseVessel(vesselId);
+
+        if (result.success) {
+            alert(`${result.message}\n\nQuality bonus: +${result.vessel.qualityBonus}%\nTime tolerance: +${result.vessel.timeBonus}s`);
+            this.updateAllUI();
+            this.updateVesselDisplay();
+            this.populateVesselShop();
+            this.populateOwnedVessels();
+        } else {
+            alert(result.message);
+        }
+    }
+
+    equipVessel(vesselId) {
+        const result = this.vesselManager.equipVessel(vesselId);
+
+        if (result.success) {
+            this.updateVesselDisplay();
+            this.populateOwnedVessels();
+        } else {
+            alert(result.message);
+        }
     }
 }
 

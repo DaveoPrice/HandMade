@@ -40,6 +40,18 @@
                 <!-- Tea Preparation Area -->
                 <div id="brewing-area" class="hidden">
                     <h3>Prepare Tea</h3>
+
+                    <!-- Current Vessel Display -->
+                    <div id="current-vessel-display">
+                        <div class="vessel-info">
+                            <img id="vessel-image" src="" alt="Current brewing vessel">
+                            <div class="vessel-details">
+                                <strong id="vessel-name">Simple Tea Cup</strong>
+                                <button id="change-vessel-btn" class="btn-small">Change Teaware</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <div id="tea-selection">
                         <label>Select Tea:</label>
                         <select id="tea-select"></select>
@@ -157,6 +169,29 @@
             <button class="tab-btn" data-panel="notebook-panel">📓 Notebook</button>
         </nav>
 
+        <!-- Teaware Shop Modal -->
+        <div id="vessel-modal" class="modal hidden">
+            <div class="modal-content vessel-modal-content">
+                <h2>🫖 Teaware Collection</h2>
+                <p class="modal-description">Invest in quality brewing vessels to improve your tea quality and impress customers!</p>
+
+                <div class="vessel-tabs">
+                    <button class="vessel-tab active" data-tab="available">Available</button>
+                    <button class="vessel-tab" data-tab="owned">Your Collection</button>
+                </div>
+
+                <div id="available-vessels" class="vessel-tab-content active">
+                    <div id="vessel-shop-list" class="vessel-grid"></div>
+                </div>
+
+                <div id="owned-vessels" class="vessel-tab-content">
+                    <div id="owned-vessel-list" class="vessel-grid"></div>
+                </div>
+
+                <button class="btn-secondary close-modal">Close</button>
+            </div>
+        </div>
+
         <!-- Shop Upgrades Modal -->
         <div id="upgrade-modal" class="modal hidden">
             <div class="modal-content">
@@ -172,6 +207,7 @@
     <script src="customer.js"></script>
     <script src="foraging.js"></script>
     <script src="notebook.js"></script>
+    <script src="vessels.js"></script>
     <script src="game.js"></script>
 </body>
 </html>
