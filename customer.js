@@ -62,7 +62,7 @@ class CustomerManager {
         return basePatienceTime[patienceLevel] || 180;
     }
 
-    evaluateService(brewedTea, temperature, steepTime) {
+    evaluateService(brewedTea, temperature, steepTime, vessel = null) {
         if (!this.currentCustomer) return null;
 
         const requested = this.currentCustomer.requestedTea;
@@ -79,13 +79,24 @@ class CustomerManager {
         // Evaluate steep time (convert to seconds if needed)
         const steepDiff = Math.abs(steepTime - requested.idealSteep);
 
-        // Determine quality
+        // Apply vessel bonuses (if equipped)
+        const vesselBonus = vessel ? vessel.qualityBonus || 0 : 0;
+        const vesselTimeBonus = vessel ? vessel.timeBonus || 0 : 0;
+
+        // Determine quality with vessel bonuses applied
         let quality = 'poor';
-        if (tempDiff <= BREW_QUALITY.perfect.tempTolerance && steepDiff <= BREW_QUALITY.perfect.steepTolerance) {
+        const perfectTempTolerance = BREW_QUALITY.perfect.tempTolerance + vesselBonus;
+        const perfectSteepTolerance = BREW_QUALITY.perfect.steepTolerance + vesselTimeBonus;
+        const goodTempTolerance = BREW_QUALITY.good.tempTolerance + vesselBonus;
+        const goodSteepTolerance = BREW_QUALITY.good.steepTolerance + vesselTimeBonus;
+        const acceptableTempTolerance = BREW_QUALITY.acceptable.tempTolerance + vesselBonus;
+        const acceptableSteepTolerance = BREW_QUALITY.acceptable.steepTolerance + vesselTimeBonus;
+
+        if (tempDiff <= perfectTempTolerance && steepDiff <= perfectSteepTolerance) {
             quality = 'perfect';
-        } else if (tempDiff <= BREW_QUALITY.good.tempTolerance && steepDiff <= BREW_QUALITY.good.steepTolerance) {
+        } else if (tempDiff <= goodTempTolerance && steepDiff <= goodSteepTolerance) {
             quality = 'good';
-        } else if (tempDiff <= BREW_QUALITY.acceptable.tempTolerance && steepDiff <= BREW_QUALITY.acceptable.steepTolerance) {
+        } else if (tempDiff <= acceptableTempTolerance && steepDiff <= acceptableSteepTolerance) {
             quality = 'acceptable';
         }
 
