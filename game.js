@@ -21,7 +21,8 @@ class TeaShopGame {
             temperature: 75,
             steepTime: 0,
             steeping: false,
-            steepInterval: null
+            steepInterval: null,
+            speedMultiplier: 1 // 1x, 2x, or 3x speed
         };
 
         // Initialize UI
@@ -55,6 +56,18 @@ class TeaShopGame {
         tempSlider.addEventListener('input', (e) => {
             this.currentBrew.temperature = parseInt(e.target.value);
             tempDisplay.textContent = this.currentBrew.temperature;
+        });
+
+        // Speed controls
+        document.querySelectorAll('.speed-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Update speed multiplier
+                this.currentBrew.speedMultiplier = parseInt(e.target.dataset.speed);
+
+                // Update active button
+                document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+            });
         });
 
         // Steeping controls
@@ -216,7 +229,8 @@ class TeaShopGame {
         // Hide previous feedback
         document.getElementById('brew-feedback').classList.remove('show');
 
-        // Start timer
+        // Start timer (interval adjusted by speed multiplier)
+        const intervalTime = 1000 / this.currentBrew.speedMultiplier;
         this.currentBrew.steepInterval = setInterval(() => {
             this.currentBrew.steepTime += 1;
             document.getElementById('steep-display').textContent = this.currentBrew.steepTime;
@@ -237,7 +251,7 @@ class TeaShopGame {
             } else {
                 steepProgress.style.background = 'linear-gradient(90deg, var(--danger), var(--danger))';
             }
-        }, 1000);
+        }, intervalTime);
     }
 
     serveTea() {
@@ -346,8 +360,17 @@ class TeaShopGame {
             temperature: 75,
             steepTime: 0,
             steeping: false,
-            steepInterval: null
+            steepInterval: null,
+            speedMultiplier: 1
         };
+
+        // Reset speed buttons
+        document.querySelectorAll('.speed-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.speed === '1') {
+                btn.classList.add('active');
+            }
+        });
 
         document.getElementById('tea-select').value = '';
         document.getElementById('steep-progress').style.width = '0%';
