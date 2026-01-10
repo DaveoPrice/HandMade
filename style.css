@@ -277,11 +277,21 @@ header h1 {
 /* Brew Feedback */
 #brew-feedback {
     margin-top: 20px;
-    padding: 15px;
-    border-radius: 6px;
-    font-weight: bold;
-    text-align: center;
+    padding: 25px;
+    border-radius: 12px;
     display: none;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 #brew-feedback.show {
@@ -289,21 +299,174 @@ header h1 {
 }
 
 #brew-feedback.perfect {
-    background: #e8f5e9;
-    color: var(--success);
-    border: 2px solid var(--success);
+    background: linear-gradient(135deg, #e8f5e9, #f1f8f1);
+    border: 3px solid var(--success);
+    box-shadow: 0 4px 12px rgba(123, 163, 121, 0.2);
 }
 
 #brew-feedback.good {
-    background: #fff8e1;
-    color: var(--warning);
-    border: 2px solid var(--warning);
+    background: linear-gradient(135deg, #fff8e1, #fffbf0);
+    border: 3px solid var(--warning);
+    box-shadow: 0 4px 12px rgba(212, 165, 116, 0.2);
+}
+
+#brew-feedback.acceptable {
+    background: linear-gradient(135deg, #f5f5f5, #fafafa);
+    border: 3px solid #aaa;
+    box-shadow: 0 4px 12px rgba(170, 170, 170, 0.2);
 }
 
 #brew-feedback.poor {
-    background: #ffebee;
+    background: linear-gradient(135deg, #ffebee, #fff5f5);
+    border: 3px solid var(--danger);
+    box-shadow: 0 4px 12px rgba(193, 122, 111, 0.2);
+}
+
+.feedback-header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.feedback-header h3 {
+    font-size: 1.8em;
+    margin-bottom: 8px;
+    color: var(--text-dark);
+}
+
+.feedback-message {
+    font-size: 1.1em;
+    color: var(--text-light);
+    font-style: italic;
+}
+
+.feedback-details {
+    margin-bottom: 20px;
+}
+
+.customer-response {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border-left: 4px solid var(--accent-primary);
+}
+
+.customer-response strong {
+    color: var(--accent-primary);
+    display: block;
+    margin-bottom: 5px;
+}
+
+.customer-response p {
+    color: var(--text-dark);
+    font-style: italic;
+    margin: 0;
+}
+
+.brew-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.brew-stat {
+    background: white;
+    padding: 12px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brew-stat .stat-label {
+    font-weight: bold;
+    color: var(--text-light);
+    font-size: 0.9em;
+}
+
+.brew-stat .stat-value {
+    color: var(--accent-primary);
+    font-weight: bold;
+}
+
+.earnings-display {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.earning-item {
+    background: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.earning-label {
+    font-weight: bold;
+    color: var(--text-dark);
+}
+
+.earning-value {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.earning-value.positive {
+    color: var(--success);
+}
+
+.earning-value.negative {
     color: var(--danger);
-    border: 2px solid var(--danger);
+}
+
+.feedback-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.feedback-actions button {
+    flex: 1;
+    max-width: 200px;
+}
+
+.quick-note-area {
+    margin-top: 20px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    border: 2px solid var(--border);
+}
+
+.quick-note-area textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 1em;
+    resize: vertical;
+    margin-bottom: 10px;
+}
+
+.quick-note-area textarea:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.note-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
 }
 
 /* Buttons */

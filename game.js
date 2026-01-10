@@ -314,10 +314,7 @@ class TeaShopGame {
             clearInterval(this.moodInterval);
         }
 
-        // Reset UI after delay
-        setTimeout(() => {
-            this.resetBrewingUI();
-        }, 3000);
+        // Note: UI reset now controlled by user clicking "Continue" button
     }
 
     displayFeedback(feedback) {
@@ -325,18 +322,170 @@ class TeaShopGame {
         feedbackEl.className = 'show ' + feedback.quality;
 
         let qualityEmoji = '';
+        let qualityText = '';
         switch(feedback.quality) {
-            case 'perfect': qualityEmoji = '✨'; break;
-            case 'good': qualityEmoji = '👍'; break;
-            case 'acceptable': qualityEmoji = '😐'; break;
-            case 'poor': qualityEmoji = '😞'; break;
+            case 'perfect':
+                qualityEmoji = '✨';
+                qualityText = 'Perfect Brew!';
+                break;
+            case 'good':
+                qualityEmoji = '👍';
+                qualityText = 'Good Brew';
+                break;
+            case 'acceptable':
+                qualityEmoji = '😐';
+                qualityText = 'Acceptable';
+                break;
+            case 'poor':
+                qualityEmoji = '😞';
+                qualityText = 'Needs Improvement';
+                break;
         }
 
+        // Store current brew data for note-taking
+        this.lastBrewData = {
+            teaName: this.currentBrew.tea.name,
+            temperature: this.currentBrew.temperature,
+            steepTime: this.currentBrew.steepTime,
+            quality: feedback.quality,
+            customerName: feedback.customerName
+        };
+
         feedbackEl.innerHTML = `
-            <h4>${qualityEmoji} ${feedback.message}</h4>
-            <p><strong>${feedback.customerName}:</strong> "${feedback.customerResponse}"</p>
-            <p>Earned: ${feedback.payment} coins | Reputation: ${feedback.reputation > 0 ? '+' : ''}${feedback.reputation}</p>
+            <div class="feedback-header">
+                <h3>${qualityEmoji} ${qualityText}</h3>
+                <p class="feedback-message">${feedback.message}</p>
+            </div>
+
+            <div class="feedback-details">
+                <div class="customer-response">
+                    <strong>${feedback.customerName}:</strong>
+                    <p>"${feedback.customerResponse}"</p>
+                </div>
+
+                <div class="brew-summary">
+                    <div class="brew-stat">
+                        <span class="stat-label">Tea:</span>
+                        <span class="stat-value">${this.currentBrew.tea.name}</span>
+                    </div>
+                    <div class="brew-stat">
+                        <span class="stat-label">Temperature:</span>
+                        <span class="stat-value">${this.currentBrew.temperature}°C</span>
+                    </div>
+                    <div class="brew-stat">
+                        <span class="stat-label">Steep Time:</span>
+                        <span class="stat-value">${this.currentBrew.steepTime}s</span>
+                    </div>
+                </div>
+
+                <div class="earnings-display">
+                    <div class="earning-item">
+                        <span class="earning-label">💰 Earned:</span>
+                        <span class="earning-value">+${feedback.payment} coins</span>
+                    </div>
+                    <div class="earning-item">
+                        <span class="earning-label">⭐ Reputation:</span>
+                        <span class="earning-value ${feedback.reputation >= 0 ? 'positive' : 'negative'}">${feedback.reputation > 0 ? '+' : ''}${feedback.reputation}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feedback-actions">
+                <button id="add-quick-note-btn" class="btn-secondary">📝 Add Note</button>
+                <button id="view-stats-btn" class="btn-secondary">📊 View Stats</button>
+                <button id="continue-btn" class="btn-primary">Continue ➜</button>
+            </div>
+
+            <div id="quick-note-area" class="quick-note-area hidden">
+                <textarea id="quick-note-input" placeholder="Add a note about this brew..."></textarea>
+                <div class="note-actions">
+                    <button id="save-note-btn" class="btn-primary">Save Note</button>
+                    <button id="cancel-note-btn" class="btn-secondary">Cancel</button>
+                </div>
+            </div>
         `;
+
+        // Attach event listeners to the new buttons
+        this.attachFeedbackListeners();
+    }
+
+    attachFeedbackListeners() {
+        // Continue button - proceed to next customer
+        const continueBtn = document.getElementById('continue-btn');
+        if (continueBtn) {
+            continueBtn.addEventListener('click', () => {
+                this.resetBrewingUI();
+            });
+        }
+
+        // Add Note button - show note input area
+        const addNoteBtn = document.getElementById('add-quick-note-btn');
+        if (addNoteBtn) {
+            addNoteBtn.addEventListener('click', () => {
+                const noteArea = document.getElementById('quick-note-area');
+                noteArea.classList.toggle('hidden');
+                if (!noteArea.classList.contains('hidden')) {
+                    document.getElementById('quick-note-input').focus();
+                }
+            });
+        }
+
+        // Save Note button
+        const saveNoteBtn = document.getElementById('save-note-btn');
+        if (saveNoteBtn) {
+            saveNoteBtn.addEventListener('click', () => {
+                const noteInput = document.getElementById('quick-note-input');
+                const noteText = noteInput.value.trim();
+
+                if (noteText) {
+                    // Add note about this specific brew
+                    const note = `${this.lastBrewData.teaName} for ${this.lastBrewData.customerName}: ${noteText}`;
+                    this.notebookManager.addGeneralNote(note);
+
+                    // Clear and hide the note area
+                    noteInput.value = '';
+                    document.getElementById('quick-note-area').classList.add('hidden');
+
+                    // Show confirmation
+                    alert('Note saved to your notebook!');
+                }
+            });
+        }
+
+        // Cancel Note button
+        const cancelNoteBtn = document.getElementById('cancel-note-btn');
+        if (cancelNoteBtn) {
+            cancelNoteBtn.addEventListener('click', () => {
+                document.getElementById('quick-note-input').value = '';
+                document.getElementById('quick-note-area').classList.add('hidden');
+            });
+        }
+
+        // View Stats button - switch to notebook stats tab
+        const viewStatsBtn = document.getElementById('view-stats-btn');
+        if (viewStatsBtn) {
+            viewStatsBtn.addEventListener('click', () => {
+                // Switch to notebook panel
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                document.getElementById('notebook-panel').classList.add('active');
+
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelector('[data-panel="notebook-panel"]').classList.add('active');
+
+                // Switch to statistics section
+                document.querySelectorAll('.notebook-section').forEach(s => s.classList.remove('active'));
+                document.getElementById('statistics-section').classList.add('active');
+
+                document.querySelectorAll('.notebook-tab').forEach(t => t.classList.remove('active'));
+                document.querySelector('[data-section="statistics"]').classList.add('active');
+
+                // Update notebook display
+                this.notebookManager.updateNotebookDisplay();
+
+                // Reset brewing UI
+                this.resetBrewingUI();
+            });
+        }
     }
 
     resetBrewingUI() {
