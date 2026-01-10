@@ -14,6 +14,7 @@ class TeaShopGame {
         this.customerManager = new CustomerManager(this.state);
         this.foragingManager = new ForagingManager(this.state);
         this.notebookManager = new NotebookManager();
+        this.teaLeafGame = new TeaLeafGame();
 
         // Brewing state
         this.currentBrew = {
@@ -229,6 +230,9 @@ class TeaShopGame {
         // Hide previous feedback
         document.getElementById('brew-feedback').classList.remove('show');
 
+        // Start tea leaf catching mini-game
+        this.teaLeafGame.start();
+
         // Start timer (interval adjusted by speed multiplier)
         const intervalTime = 1000 / this.currentBrew.speedMultiplier;
         this.currentBrew.steepInterval = setInterval(() => {
@@ -254,12 +258,19 @@ class TeaShopGame {
         }, intervalTime);
     }
 
-    serveTea() {
+    async serveTea() {
         if (!this.currentBrew.steeping) return;
 
         // Stop steeping
         clearInterval(this.currentBrew.steepInterval);
         this.currentBrew.steeping = false;
+
+        // Stop tea leaf game and get results
+        const leafGameResults = this.teaLeafGame.stop();
+
+        // Show perfect pour mini-game
+        const pourGame = new PerfectPourGame();
+        const pourResults = await pourGame.start();
 
         // Evaluate the brew
         const feedback = this.customerManager.evaluateService(
@@ -268,10 +279,23 @@ class TeaShopGame {
             this.currentBrew.steepTime
         );
 
-        // Update game state
-        this.state.money += feedback.payment;
+        // Calculate total bonuses
+        const totalBonus = leafGameResults.bonusCoins + pourResults.bonus;
+
+        // Update game state with base payment + bonuses
+        this.state.money += feedback.payment + totalBonus;
         this.state.reputation += feedback.reputation;
         this.state.customersServed++;
+
+        // Store bonus info for display
+        feedback.minigameBonus = {
+            leaves: leafGameResults.leavesCaught,
+            leafBonus: leafGameResults.bonusCoins,
+            pourQuality: pourResults.quality,
+            pourBonus: pourResults.bonus,
+            pourMessage: pourResults.message,
+            totalBonus: totalBonus
+        };
 
         if (feedback.quality === 'perfect') {
             this.state.perfectBrews++;
@@ -332,10 +356,24 @@ class TeaShopGame {
             case 'poor': qualityEmoji = '😞'; break;
         }
 
+        let bonusHTML = '';
+        if (feedback.minigameBonus && feedback.minigameBonus.totalBonus > 0) {
+            bonusHTML = `
+                <div class="minigame-bonus">
+                    <h5>🎮 Mini-Game Bonuses!</h5>
+                    <p>🍃 Caught ${feedback.minigameBonus.leaves} tea leaves: +${feedback.minigameBonus.leafBonus} coins</p>
+                    <p>${feedback.minigameBonus.pourMessage}</p>
+                    <p><strong>Total Bonus: +${feedback.minigameBonus.totalBonus} coins</strong></p>
+                </div>
+            `;
+        }
+
         feedbackEl.innerHTML = `
             <h4>${qualityEmoji} ${feedback.message}</h4>
             <p><strong>${feedback.customerName}:</strong> "${feedback.customerResponse}"</p>
-            <p>Earned: ${feedback.payment} coins | Reputation: ${feedback.reputation > 0 ? '+' : ''}${feedback.reputation}</p>
+            <p>Base Payment: ${feedback.payment} coins | Reputation: ${feedback.reputation > 0 ? '+' : ''}${feedback.reputation}</p>
+            ${bonusHTML}
+            ${feedback.minigameBonus ? `<p class="total-earned"><strong>Total Earned: ${feedback.payment + feedback.minigameBonus.totalBonus} coins</strong></p>` : ''}
         `;
     }
 
